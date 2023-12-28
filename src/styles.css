@@ -1,0 +1,15 @@
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "modern-normalize";
+
+
+html,
+body {
+  display: grid;
+  grid-template: 1fr / 1fr;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+}
