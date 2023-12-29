@@ -1,7 +1,32 @@
+
+
 :host {
-  display: contents;
-  div {
-    background-color: blue;
-    color: white;
+
+  --columns: 3;
+
+  border: inset 10px black;
+  display: grid;
+  margin: .5rem;
+  padding: .5rem;
+}
+.viewer-toolbar {
+  p-progressBar {
+    flex: 1 1 auto;
+  }
+}
+
+.image-gallery {
+
+  transition: 300ms;
+  display: grid;
+  grid-auto-flow: rows;
+  grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+  gap: 4px;
+  overflow-y: auto;
+
+  img, video, p-image {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
   }
 }

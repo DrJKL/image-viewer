@@ -6,7 +6,7 @@
 html,
 body {
   display: grid;
-  grid-template: 1fr / 1fr;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
 }
 
 body {

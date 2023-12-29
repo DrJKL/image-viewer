@@ -1,8 +1,20 @@
 :host {
   display: grid;
-  grid-template: 1fr / 1fr;
+  grid-template: min-content minmax(0,1fr) / minmax(0,1fr);
+  overflow: clip;
 
   & > router-outlet {
     display: none;
+  }
+}
+
+.image-viewer-app-bar {
+  /* text-shadow: 5px 2px 4px blue; */
+  ::ng-deep div {
+    /* color: red; */
+    padding: .125rem .5rem;
+  }
+  ::ng-deep h1 {
+    margin: 0;
   }
 }

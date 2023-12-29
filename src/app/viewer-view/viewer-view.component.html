@@ -1,1 +1,34 @@
-<div>viewer-view works!</div>
+<p-toolbar class="viewer-toolbar">
+  <p-button class="p-toolbar-group-start"
+            (click)="openFolderSelector($event)">Select Folder?</p-button>
+  <p-progressBar *ngIf="loading()"
+                 class="p-toolbar-group-center"
+                 mode="indeterminate"
+                 [style]="{ height: '6px' }"></p-progressBar>
+  <p-paginator class="p-toolbar-group-end"
+               (onPageChange)="onPageChange($event)"
+               [first]="first()"
+               [rows]="itemsPerPage()"
+               [totalRecords]="files().length"
+               [showCurrentPageReport]="true"
+               [alwaysShow]="false"></p-paginator>
+  <input type="number"
+         [ngModel]="columns()"
+         (ngModelChange)="columns.set($event)"
+         [min]="1"
+         [max]="itemsPerPage()" />
+</p-toolbar>
+<div class="image-gallery"
+     [style.--columns]="columns()">
+  @for (file of imageSlice(); track $index) {
+  @if (file[0].endsWith('.mp4')) {
+  <video [title]="file[0]"
+         [src]="file[1]"
+         controls></video>
+  } @else {
+  <img [title]="file[0]"
+       [src]="file[1]">
+  }
+  }
+
+</div>
