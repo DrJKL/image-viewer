@@ -9,9 +9,7 @@
 }
 
 .image-viewer-app-bar {
-  /* text-shadow: 5px 2px 4px blue; */
   ::ng-deep div {
-    /* color: red; */
     padding: .125rem .5rem;
   }
   ::ng-deep h1 {
