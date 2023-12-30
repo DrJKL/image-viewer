@@ -29,9 +29,15 @@ dependencies:
   '@angular/router':
     specifier: ^17.0.0
     version: 17.0.8(@angular/common@17.0.8)(@angular/core@17.0.8)(@angular/platform-browser@17.0.8)(rxjs@7.8.1)
+  animate-css-grid:
+    specifier: ^1.5.1
+    version: 1.5.1
   core-js:
     specifier: ^3.35.0
     version: 3.35.0
+  exifreader:
+    specifier: ^4.20.0
+    version: 4.20.0
   file-system-access:
     specifier: ^1.0.4
     version: 1.0.4
@@ -2320,6 +2326,20 @@ packages:
     dev: true
     optional: true
 
+  /@popmotion/easing@1.0.2:
+    resolution: {integrity: sha512-IkdW0TNmRnWTeWI7aGQIVDbKXPWHVEYdGgd5ZR4SH/Ty/61p63jCjrPxX1XrR7IGkl08bjhJROStD7j+RKgoIw==}
+    dev: false
+
+  /@popmotion/popcorn@0.4.4:
+    resolution: {integrity: sha512-jYO/8319fKoNLMlY4ZJPiPu8Ea8occYwRZhxpaNn/kZsK4QG2E7XFlXZMJBsTWDw7I1i0uaqyC4zn1nwEezLzg==}
+    dependencies:
+      '@popmotion/easing': 1.0.2
+      framesync: 4.1.0
+      hey-listen: 1.0.8
+      style-value-types: 3.2.0
+      tslib: 1.14.1
+    dev: false
+
   /@schematics/angular@17.0.8:
     resolution: {integrity: sha512-1h5mwKFv1B/L5JWZ0mxnC4ms06iwnSi/w+GgRZPeM3P5BpuZuvAkFiClNnM55iLlQJXRQioPNLM3sOsz7spR6w==}
     engines: {node: ^18.13.0 || >=20.9.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
@@ -2470,6 +2490,16 @@ packages:
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
     dev: true
+
+  /@types/lodash.throttle@4.1.9:
+    resolution: {integrity: sha512-PCPVfpfueguWZQB7pJQK890F2scYKoDUL3iM522AptHWn7d5NQmeS/LTEHIcLr5PaTzl3dK2Z0xSUHHTHwaL5g==}
+    dependencies:
+      '@types/lodash': 4.14.202
+    dev: false
+
+  /@types/lodash@4.14.202:
+    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
+    dev: false
 
   /@types/mime@1.3.5:
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
@@ -2659,6 +2689,13 @@ packages:
       '@xtuc/long': 4.2.2
     dev: true
 
+  /@xmldom/xmldom@0.8.10:
+    resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
+    engines: {node: '>=10.0.0'}
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /@xtuc/ieee754@1.2.0:
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
     dev: true
@@ -2789,6 +2826,16 @@ packages:
       fs-extra: 9.1.0
       gh-pages: 3.2.3
     dev: true
+
+  /animate-css-grid@1.5.1:
+    resolution: {integrity: sha512-Bw48dm3kjJshSO8TY6PtWJ7gvXluh2ad97zPiNu1jTRyRywAzsbKlwG45byL9cJ/x9N126rkU5U9y1jzHK8ttQ==}
+    dependencies:
+      '@popmotion/easing': 1.0.2
+      '@types/lodash.throttle': 4.1.9
+      framesync: 6.1.2
+      lodash.throttle: 4.1.1
+      popmotion: 8.7.6
+    dev: false
 
   /ansi-colors@4.1.3:
     resolution: {integrity: sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==}
@@ -4042,6 +4089,13 @@ packages:
       strip-final-newline: 2.0.0
     dev: true
 
+  /exifreader@4.20.0:
+    resolution: {integrity: sha512-C28BhOHe5svd0Jj/5DGSIXD3PnPp46gfvHN4OkRfvHYZHkcJMhxeUxlwsgJ6Yl62zlZRtmfN+9suZFg0fv4hgg==}
+    requiresBuild: true
+    optionalDependencies:
+      '@xmldom/xmldom': 0.8.10
+    dev: false
+
   /exponential-backoff@3.1.1:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
     dev: true
@@ -4294,6 +4348,18 @@ packages:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
     dev: true
 
+  /framesync@4.1.0:
+    resolution: {integrity: sha512-MmgZ4wCoeVxNbx2xp5hN/zPDCbLSKiDt4BbbslK7j/pM2lg5S0vhTNv1v8BCVb99JPIo6hXBFdwzU7Q4qcAaoQ==}
+    dependencies:
+      hey-listen: 1.0.8
+    dev: false
+
+  /framesync@6.1.2:
+    resolution: {integrity: sha512-jBTqhX6KaQVDyus8muwZbBeGGP0XgujBRbQ7gM7BRdS3CadCZIHiawyzYLnafYcvZIh5j8WE7cxZKFn7dXhu9g==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
+
   /fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -4529,6 +4595,10 @@ packages:
   /hdr-histogram-percentiles-obj@3.0.0:
     resolution: {integrity: sha512-7kIufnBqdsBGcSZLPJwqHT3yhk1QTsSlFsVD3kx5ixH/AlgBs9yM1q6DPhXZ8f8gtdqgh7N7/5btRLpQsS2gHw==}
     dev: true
+
+  /hey-listen@1.0.8:
+    resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
+    dev: false
 
   /hosted-git-info@7.0.1:
     resolution: {integrity: sha512-+K84LB1DYwMHoHSgaOY/Jfhw3ucPmSET5v98Ke/HdNSw4a0UktWzyW1mjhjpuxxTqOOsfWT/7iVshHmVZ4IpOA==}
@@ -5271,6 +5341,10 @@ packages:
   /lodash.isfinite@3.3.2:
     resolution: {integrity: sha512-7FGG40uhC8Mm633uKW1r58aElFlBlxCrg9JfSi3P6aYiWmfiWF0PgMd86ZUsxE5GwWPdHoS2+48bwTh2VPkIQA==}
     dev: true
+
+  /lodash.throttle@4.1.1:
+    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
+    dev: false
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -6096,6 +6170,18 @@ packages:
     dependencies:
       find-up: 6.3.0
     dev: true
+
+  /popmotion@8.7.6:
+    resolution: {integrity: sha512-gzU0mRAik8FIEOP4Nk5yqYptJIvHLoq/IRU+rANmKjDZ7tynAivYQ9cIJAxVaoS9h0zfXvN0cFBAg93ncmHHkA==}
+    dependencies:
+      '@popmotion/easing': 1.0.2
+      '@popmotion/popcorn': 0.4.4
+      framesync: 4.1.0
+      hey-listen: 1.0.8
+      style-value-types: 3.2.0
+      stylefire: 7.0.3
+      tslib: 1.14.1
+    dev: false
 
   /portscanner@2.2.0:
     resolution: {integrity: sha512-IFroCz/59Lqa2uBvzK3bKDbDDIEaAY8XJ1jFxcLWTqosrsc32//P4VuSB2vZXoHiHqOmx8B5L5hnKOxL/7FlPw==}
@@ -7047,6 +7133,23 @@ packages:
       escape-string-regexp: 1.0.5
     dev: true
 
+  /style-value-types@3.2.0:
+    resolution: {integrity: sha512-ih0mGsrYYmVvdDi++/66O6BaQPRPRMQHoZevNNdMMcPlP/cH28Rnfsqf1UEba/Bwfuw9T8BmIMwbGdzsPwQKrQ==}
+    dependencies:
+      hey-listen: 1.0.8
+      tslib: 1.14.1
+    dev: false
+
+  /stylefire@7.0.3:
+    resolution: {integrity: sha512-Q0l7NSeFz/OkX+o6/7Zg3VZxSAZeQzQpYomWmIpOehFM/rJNMSLVX5fgg6Q48ut2ETNKwdhm97mPNU643EBCoQ==}
+    dependencies:
+      '@popmotion/popcorn': 0.4.4
+      framesync: 4.1.0
+      hey-listen: 1.0.8
+      style-value-types: 3.2.0
+      tslib: 1.14.1
+    dev: false
+
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -7201,6 +7304,14 @@ packages:
     dependencies:
       escape-string-regexp: 1.0.5
     dev: true
+
+  /tslib@1.14.1:
+    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
+    dev: false
+
+  /tslib@2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
+    dev: false
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}

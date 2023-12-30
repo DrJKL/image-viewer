@@ -1,6 +1,6 @@
 :host {
   display: grid;
-  grid-template: min-content minmax(0,1fr) / minmax(0,1fr);
+  grid-template: min-content minmax(0, 1fr) / minmax(0, 1fr);
   overflow: clip;
 
   & > router-outlet {
@@ -9,10 +9,8 @@
 }
 
 .image-viewer-app-bar {
-  ::ng-deep div {
-    padding: .125rem .5rem;
-  }
-  ::ng-deep h1 {
+  padding: 0.125rem 0.5rem;
+  h1 {
     margin: 0;
   }
 }

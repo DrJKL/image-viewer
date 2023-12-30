@@ -12,22 +12,40 @@
                [totalRecords]="files().length"
                [showCurrentPageReport]="true"
                [alwaysShow]="false"></p-paginator>
-  <input type="number"
-         [ngModel]="columns()"
-         (ngModelChange)="columns.set($event)"
-         [min]="1"
-         [max]="itemsPerPage()" />
+  <div>
+    <label for="columnInput">Columns </label>
+    <input type="number"
+           id="columnInput"
+           name="columnInput"
+           [ngModel]="columns()"
+           (ngModelChange)="columns.set($event)"
+           [min]="1"
+           [max]="itemsPerPage()" />
+  </div>
+  <div>
+    <label for="countInput">Images per Page </label>
+    <input type="number"
+           id="countInput"
+           name="countInput"
+           [ngModel]="itemsPerPage()"
+           (ngModelChange)="itemsPerPage.set($event)"
+           [min]="1"
+           [max]="25" />
+  </div>
 </p-toolbar>
 <div class="image-gallery"
      [style.--columns]="columns()">
   @for (file of imageSlice(); track $index) {
   @if (file[0].endsWith('.mp4')) {
-  <video [title]="file[0]"
+  <video class="image"
+         [title]="file[0]"
          [src]="file[1]"
          controls></video>
   } @else {
-  <img [title]="file[0]"
-       [src]="file[1]">
+  <img class="image"
+       [title]="file[0]"
+       [src]="file[1]"
+       (click)="checkExifData($event, file[2])">
   }
   }
 
