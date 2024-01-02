@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  WritableSignal,
   effect,
+  inject,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import ExifReader, { ExifTags } from 'exifreader';
+import ExifReader from 'exifreader';
 import { showDirectoryPicker } from 'file-system-access';
 import { ButtonModule } from 'primeng/button';
 import { ImageModule } from 'primeng/image';
@@ -14,6 +16,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToolbarModule } from 'primeng/toolbar';
+import { FolderWatcher, getFilesRecursively } from './folder_utils';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'iv-viewer-view',
@@ -33,35 +37,44 @@ import { ToolbarModule } from 'primeng/toolbar';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViewerViewComponent {
-  readonly loading = signal(false);
-  readonly files = signal<Array<FileSystemFileHandle>>([]);
+  readonly folderWatcher = inject(FolderWatcher);
+  readonly files = toSignal(this.folderWatcher.filesFound$);
   readonly page = signal(0);
   readonly first = signal(0);
   readonly itemsPerPage = signal(9);
   readonly columns = signal(3);
 
   readonly imageSlice = signal<
-    Array<readonly [string, string, ExifReader.Tags]>
+    Array<readonly [string, string, ExifReader.Tags | undefined]>
   >([]);
 
-  readonly updateSliceEffect = effect(() => {
-    const files = this.files();
-    const filesSlice = files.slice(
-      this.first(),
-      this.first() + this.itemsPerPage()
-    );
-    Promise.all(
+  readonly updateSliceEffect = effect(async () => {
+    const files = this.files()?.toReversed();
+    const filesSlice =
+      files?.slice(this.first(), this.first() + this.itemsPerPage()) ?? [];
+    const slice = await Promise.all(
       filesSlice.map(
-        async (handle): Promise<readonly [string, string, ExifReader.Tags]> => {
-          const file = await handle.getFile();
+        async (
+          handle
+        ): Promise<readonly [string, string, ExifReader.Tags | undefined]> => {
+          const file = await handle.file.getFile();
+          let exifTags: ExifReader.Tags | undefined;
+          try {
+            if (file.type.startsWith('image')) {
+              exifTags = await ExifReader.load(file);
+            }
+          } catch (err) {
+            console.error('Failed to read tags from file', { cause: err });
+          }
           return [
-            handle.name,
+            handle.file.name,
             URL.createObjectURL(file),
-            await ExifReader.load(file),
+            exifTags,
           ] as const;
         }
       )
-    ).then((slice) => this.imageSlice.set(slice));
+    );
+    this.imageSlice.set(slice);
   });
 
   async openFolderSelector(_$event: MouseEvent) {
@@ -69,20 +82,9 @@ export class ViewerViewComponent {
     if (!directoryHandle) {
       return;
     }
-    this.loading.set(true);
-    this.files.set([]);
+    this.folderWatcher.watchFolder(directoryHandle);
     this.page.set(0);
     this.first.set(0);
-    const buffer: FileSystemFileHandle[] = [];
-    for await (const file of getFilesRecursively(directoryHandle)) {
-      if (buffer.length >= 40) {
-        this.files.update((files) => [...files, ...buffer]);
-        buffer.splice(0, buffer.length);
-      }
-      buffer.push(file);
-    }
-    this.files.update((files) => [...files, ...buffer]);
-    this.loading.set(false);
   }
 
   onPageChange($event: PaginatorState) {
@@ -97,38 +99,46 @@ export class ViewerViewComponent {
     }
   }
 
-  checkExifData($event: MouseEvent, tags: ExifReader.Tags) {
+  checkExifData(_$event: MouseEvent, tags: ExifReader.Tags | undefined) {
     console.log({ tags });
+    if (!tags) {
+      return;
+    }
     const { prompt, workflow } = tags;
     if (prompt) {
-      const promptJSON = JSON.parse(prompt.value);
-      console.log(promptJSON);
+      try {
+        const { value } = prompt;
+        const cleanValue = value.replaceAll(/NaN/g, 'null');
+        const promptJSON = JSON.parse(cleanValue);
+        console.log(promptJSON);
+      } catch (error: unknown) {
+        console.error('Failed to parse prompt', error);
+      }
     }
     if (workflow) {
-      const workflowJSON = JSON.parse(workflow.value);
-      console.log(workflowJSON);
+      try {
+        const workflowJSON = JSON.parse(workflow.value);
+        console.log(workflowJSON);
+      } catch (error) {
+        console.error('Failed to parse workflow', error);
+      }
     }
   }
 }
 
-const ALLOWED_EXTENSIONS = ['png', 'jpg', 'mp4', 'gif'] as const;
-
-async function* getFilesRecursively(
-  entry: FileSystemFileHandle | FileSystemDirectoryHandle
-): AsyncGenerator<FileSystemFileHandle> {
-  switch (entry.kind) {
-    case 'file':
-      const file = await entry.getFile();
-      const extension = entry.name.slice(entry.name.lastIndexOf('.') + 1);
-      const valid = ALLOWED_EXTENSIONS.some((ext) => ext === extension);
-      if (file !== null && valid) {
-        yield entry;
-      }
-      break;
-    case 'directory':
-      for await (const handle of entry.values()) {
-        yield* getFilesRecursively(handle);
-      }
-      break;
+async function updateSignalWithBuffer<T>(
+  signal: WritableSignal<T[]>,
+  generator: AsyncGenerator<T>,
+  bufferSize = 40
+) {
+  signal.set([]);
+  const buffer: T[] = [];
+  for await (const file of generator) {
+    if (buffer.length >= bufferSize) {
+      signal.update((files) => [...files, ...buffer]);
+      buffer.splice(0, buffer.length);
+    }
+    buffer.push(file);
   }
+  signal.update((files) => [...files, ...buffer]);
 }

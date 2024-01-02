@@ -1,15 +1,11 @@
 <p-toolbar class="viewer-toolbar">
   <p-button class="p-toolbar-group-start"
             (click)="openFolderSelector($event)">Select Folder?</p-button>
-  <p-progressBar *ngIf="loading()"
-                 class="p-toolbar-group-center"
-                 mode="indeterminate"
-                 [style]="{ height: '6px' }"></p-progressBar>
   <p-paginator class="p-toolbar-group-end"
                (onPageChange)="onPageChange($event)"
                [first]="first()"
                [rows]="itemsPerPage()"
-               [totalRecords]="files().length"
+               [totalRecords]="files()?.length ?? 0"
                [showCurrentPageReport]="true"
                [alwaysShow]="false"></p-paginator>
   <div>
@@ -40,6 +36,7 @@
   <video class="image"
          [title]="file[0]"
          [src]="file[1]"
+         loop
          controls></video>
   } @else {
   <img class="image"
