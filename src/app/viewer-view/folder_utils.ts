@@ -25,14 +25,19 @@ export class FolderWatcher {
     switchMap(([folder]) => from(getFilesRecursively(folder))),
     scan(async (acc, fileRecord) => {
       const fileList = await acc;
+      const existingRecord = fileList.find(
+        (record) =>
+          record.path === fileRecord.path &&
+          record.file.name === fileRecord.file.name
+      );
       if (
-        fileList.some(
-          (record) =>
-            record.path === fileRecord.path &&
-            record.file.name === fileRecord.file.name
-        )
+        existingRecord &&
+        existingRecord.lastModified >= fileRecord.lastModified
       ) {
         return fileList;
+      }
+      if (existingRecord) {
+        fileList.splice(fileList.indexOf(existingRecord), 1);
       }
       const sortedIndex = sortedIndexBy(
         fileList,

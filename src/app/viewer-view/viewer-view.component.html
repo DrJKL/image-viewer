@@ -41,7 +41,7 @@
   } @else {
   <img class="image"
        [title]="file[0]"
-       [src]="file[1]"
+       [src]="getSrc(file[1])"
        (click)="checkExifData($event, file[2])">
   }
   }

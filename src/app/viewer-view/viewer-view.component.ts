@@ -45,7 +45,7 @@ export class ViewerViewComponent {
   readonly columns = signal(3);
 
   readonly imageSlice = signal<
-    Array<readonly [string, string, ExifReader.Tags | undefined]>
+    Array<readonly [string, File, ExifReader.Tags | undefined]>
   >([]);
 
   readonly updateSliceEffect = effect(async () => {
@@ -56,7 +56,7 @@ export class ViewerViewComponent {
       filesSlice.map(
         async (
           handle
-        ): Promise<readonly [string, string, ExifReader.Tags | undefined]> => {
+        ): Promise<readonly [string, File, ExifReader.Tags | undefined]> => {
           const file = await handle.file.getFile();
           let exifTags: ExifReader.Tags | undefined;
           try {
@@ -66,11 +66,7 @@ export class ViewerViewComponent {
           } catch (err) {
             console.error('Failed to read tags from file', { cause: err });
           }
-          return [
-            handle.file.name,
-            URL.createObjectURL(file),
-            exifTags,
-          ] as const;
+          return [handle.file.name, file, exifTags] as const;
         }
       )
     );
@@ -85,6 +81,10 @@ export class ViewerViewComponent {
     this.folderWatcher.watchFolder(directoryHandle);
     this.page.set(0);
     this.first.set(0);
+  }
+
+  getSrc(imageFile: File) {
+    return URL.createObjectURL(imageFile);
   }
 
   onPageChange($event: PaginatorState) {
