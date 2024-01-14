@@ -6,8 +6,19 @@
   margin: 4px;
 }
 
-.viewer-toolbar p-progressBar {
-  flex: 1 1 auto;
+.viewer-toolbar {
+  ::ng-deep > [role="toolbar"] {
+    min-height: 115px;
+  }
+  p-progressBar,
+  .spacer {
+    flex: 1 1 auto;
+  }
+  .columns-input,
+  .count-input,
+  .paginator {
+    flex: 0 1 fit-content;
+  }
 }
 
 .image-gallery {

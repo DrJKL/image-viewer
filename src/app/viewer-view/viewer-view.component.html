@@ -1,14 +1,17 @@
 <p-toolbar class="viewer-toolbar">
   <p-button class="p-toolbar-group-start"
             (click)="openFolderSelector($event)">Select Folder?</p-button>
-  <p-paginator class="p-toolbar-group-end"
-               (onPageChange)="onPageChange($event)"
-               [first]="first()"
-               [rows]="itemsPerPage()"
-               [totalRecords]="files()?.length ?? 0"
-               [showCurrentPageReport]="true"
-               [alwaysShow]="false"></p-paginator>
-  <div>
+  <div class="spacer"></div>
+  <div class="paginator">
+    <p-paginator class="p-toolbar-group-center"
+                 (onPageChange)="onPageChange($event)"
+                 [first]="first()"
+                 [rows]="itemsPerPage()"
+                 [totalRecords]="files()?.length ?? 0"
+                 [showCurrentPageReport]="true"
+                 [alwaysShow]="false"></p-paginator>
+  </div>
+  <div class="columns-input">
     <label for="columnInput">Columns </label>
     <input type="number"
            id="columnInput"
@@ -18,7 +21,7 @@
            [min]="1"
            [max]="itemsPerPage()" />
   </div>
-  <div>
+  <div class="count-input">
     <label for="countInput">Images per Page </label>
     <input type="number"
            id="countInput"
@@ -28,7 +31,7 @@
            [min]="1"
            [max]="25" />
   </div>
-  <div>
+  <div class="refresh-button">
     <p-button icon="pi pi-refresh"
               [rounded]="true"
               (click)="forceRefresh()"></p-button>
