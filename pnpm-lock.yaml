@@ -47,6 +47,9 @@ dependencies:
   modern-normalize:
     specifier: ^2.0.0
     version: 2.0.0
+  primeicons:
+    specifier: ^6.0.1
+    version: 6.0.1
   primeng:
     specifier: ^17.3.0
     version: 17.3.0(@angular/common@17.0.8)(@angular/core@17.0.8)(@angular/forms@17.0.8)(rxjs@7.8.1)(zone.js@0.14.2)
@@ -6277,6 +6280,10 @@ packages:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
     engines: {node: '>=6'}
     dev: true
+
+  /primeicons@6.0.1:
+    resolution: {integrity: sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==}
+    dev: false
 
   /primeng@17.3.0(@angular/common@17.0.8)(@angular/core@17.0.8)(@angular/forms@17.0.8)(rxjs@7.8.1)(zone.js@0.14.2):
     resolution: {integrity: sha512-iSn4tl59aj72LXYvUmFlGJ+DEBFCzDuIY97esKJcrO8eszvYtAWzbxi8b7UfY0XFSbYyrZCZuCW4iaJqTmUHMA==}
