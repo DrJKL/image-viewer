@@ -7,7 +7,7 @@
                  (onPageChange)="onPageChange($event)"
                  [first]="first()"
                  [rows]="itemsPerPage()"
-                 [totalRecords]="files()?.length ?? 0"
+                 [totalRecords]="files().length"
                  [showCurrentPageReport]="true"
                  [alwaysShow]="false"></p-paginator>
   </div>
