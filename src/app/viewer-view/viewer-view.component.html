@@ -14,7 +14,7 @@
            id="columnInput"
            name="columnInput"
            [ngModel]="columns()"
-           (ngModelChange)="columns.set($event)"
+           (ngModelChange)="settings.updateSettings({columns: $event})"
            [min]="1"
            [max]="itemsPerPage()" />
   </div>
@@ -24,9 +24,15 @@
            id="countInput"
            name="countInput"
            [ngModel]="itemsPerPage()"
-           (ngModelChange)="itemsPerPage.set($event)"
+           (ngModelChange)="settings.updateSettings({itemsPerPage: $event})"
            [min]="1"
            [max]="25" />
+  </div>
+  <div>
+    <p-button icon="pi pi-refresh"
+              [rounded]="true"
+              (click)="forceRefresh()"></p-button>
+
   </div>
 </p-toolbar>
 <div class="image-gallery"
@@ -35,7 +41,8 @@
   @if (file[0].endsWith('.mp4')) {
   <video class="image"
          [title]="file[0]"
-         [src]="file[1]"
+         [src]="getSrc(file[1])"
+         preload="metadata"
          loop
          controls></video>
   } @else {

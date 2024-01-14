@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
+  OnDestroy,
   WritableSignal,
+  computed,
   effect,
   inject,
   signal,
@@ -17,7 +20,12 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToolbarModule } from 'primeng/toolbar';
 import { FolderWatcher, getFilesRecursively } from './folder_utils';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Settings, SettingsService } from '../settings/settings';
+import { map, shareReplay, takeUntil } from 'rxjs/operators';
+import { ReplaySubject, firstValueFrom } from 'rxjs';
+
+type ImageData = readonly [string, File, ExifReader.Tags | undefined];
 
 @Component({
   selector: 'iv-viewer-view',
@@ -38,42 +46,64 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class ViewerViewComponent {
   readonly folderWatcher = inject(FolderWatcher);
-  readonly files = toSignal(this.folderWatcher.filesFound$);
+  readonly settings = inject(SettingsService);
+  readonly files = toSignal(this.folderWatcher.filesFound$, {
+    initialValue: [],
+  });
   readonly page = signal(0);
   readonly first = signal(0);
-  readonly itemsPerPage = signal(9);
-  readonly columns = signal(3);
+  readonly refresh = signal(0);
+  readonly itemsPerPage = toSignal(
+    this.settings
+      .watchSetting$('itemsPerPage')
+      .pipe(takeUntilDestroyed(), shareReplay(1)),
+    { requireSync: true }
+  );
+  readonly columns = toSignal(
+    this.settings
+      .watchSetting$('columns')
+      .pipe(takeUntilDestroyed(), shareReplay(1)),
+    { requireSync: true }
+  );
+  readonly pages = computed(() =>
+    Math.ceil(this.files().length / this.itemsPerPage())
+  );
 
-  readonly imageSlice = signal<
-    Array<readonly [string, File, ExifReader.Tags | undefined]>
-  >([]);
+  readonly imageSlice = signal<Array<ImageData>>([]);
 
-  readonly updateSliceEffect = effect(async () => {
-    const files = this.files()?.toReversed();
+  protected readonly updateSliceEffect = effect(async () => {
+    void this.refresh();
+    const files = this.files().toReversed();
     const filesSlice =
       files?.slice(this.first(), this.first() + this.itemsPerPage()) ?? [];
     const slice = await Promise.all(
-      filesSlice.map(
-        async (
-          handle
-        ): Promise<readonly [string, File, ExifReader.Tags | undefined]> => {
-          const file = await handle.file.getFile();
-          let exifTags: ExifReader.Tags | undefined;
-          try {
-            if (file.type.startsWith('image')) {
-              exifTags = await ExifReader.load(file);
-            }
-          } catch (err) {
-            console.error('Failed to read tags from file', { cause: err });
+      filesSlice.map(async (handle): Promise<ImageData> => {
+        const file = await handle.file.getFile();
+        let exifTags: ExifReader.Tags | undefined;
+        try {
+          if (file.type.startsWith('image')) {
+            exifTags = await ExifReader.load(file);
           }
-          return [handle.file.name, file, exifTags] as const;
+        } catch (err) {
+          console.error('Failed to read tags from file', { cause: err });
         }
-      )
+        return [handle.file.name, file, exifTags] as const;
+      })
     );
     this.imageSlice.set(slice);
   });
+  readonly columnEffect = effect(() => {
+    const columns = Math.max(1, Math.min(this.columns(), this.itemsPerPage()));
+    if (columns !== this.columns()) {
+      this.settings.updateSettings({ columns });
+    }
+  });
 
-  async openFolderSelector(_$event: MouseEvent) {
+  protected forceRefresh() {
+    this.refresh.update((times) => times + 1);
+  }
+
+  protected async openFolderSelector(_$event: MouseEvent) {
     const directoryHandle = await showDirectoryPicker();
     if (!directoryHandle) {
       return;
@@ -83,11 +113,47 @@ export class ViewerViewComponent {
     this.first.set(0);
   }
 
-  getSrc(imageFile: File) {
+  protected getSrc(imageFile: File) {
     return URL.createObjectURL(imageFile);
   }
 
-  onPageChange($event: PaginatorState) {
+  @HostListener('window:keydown', ['$event'])
+  protected async onKeydown($event: KeyboardEvent) {
+    const { target } = $event;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement
+    ) {
+      return;
+    }
+    switch ($event.key) {
+      case 'ArrowLeft':
+      case 'a':
+      case 'ArrowRight':
+      case 'd':
+        const dir = $event.key === 'ArrowLeft' || $event.key === 'a' ? -1 : 1;
+        const newPage = Math.max(
+          0,
+          Math.min(this.page() + dir, this.pages() - 1)
+        );
+        if (newPage !== this.page()) {
+          this.page.set(newPage);
+          this.first.set(this.page() * this.itemsPerPage());
+        }
+        break;
+      case 'ArrowUp':
+      case 'ArrowDown':
+        const newColumnsMod = $event.key === 'ArrowDown' ? -1 : 1;
+        const columns = Math.max(
+          1,
+          Math.min(this.columns() + newColumnsMod, this.itemsPerPage())
+        );
+        this.settings.updateSettings({ columns });
+        break;
+    }
+  }
+
+  protected onPageChange($event: PaginatorState) {
     if ($event.page !== undefined) {
       this.page.set($event.page);
     }
@@ -95,11 +161,14 @@ export class ViewerViewComponent {
       this.first.set($event.first);
     }
     if ($event.rows !== undefined) {
-      this.itemsPerPage.set($event.rows);
+      this.settings.updateSettings({ itemsPerPage: $event.rows });
     }
   }
 
-  checkExifData(_$event: MouseEvent, tags: ExifReader.Tags | undefined) {
+  protected checkExifData(
+    _$event: MouseEvent,
+    tags: ExifReader.Tags | undefined
+  ) {
     console.log({ tags });
     if (!tags) {
       return;
@@ -108,7 +177,7 @@ export class ViewerViewComponent {
     if (prompt) {
       try {
         const { value } = prompt;
-        const cleanValue = value.replaceAll(/NaN/g, 'null');
+        const cleanValue = `${value}`.replaceAll(/NaN/g, 'null');
         const promptJSON = JSON.parse(cleanValue);
         console.log(promptJSON);
       } catch (error: unknown) {
