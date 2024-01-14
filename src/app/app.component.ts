@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -9,6 +9,7 @@ import { ToolbarModule } from 'primeng/toolbar';
   imports: [CommonModule, RouterOutlet, ToolbarModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   title = 'ImageViewer';
