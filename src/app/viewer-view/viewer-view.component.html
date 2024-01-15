@@ -41,19 +41,21 @@
 <div class="image-gallery"
      [style.--columns]="columns()">
   @for (file of imageSlice(); track $index) {
-  @if (file[0].endsWith('.mp4')) {
-  <video class="image"
+  <div class="image-cell">
+    @if (file[0].endsWith('.mp4')) {
+    <video class="image"
+           [title]="file[0]"
+           [src]="getSrc(file[1])"
+           preload="metadata"
+           loop
+           controls></video>
+    } @else {
+    <img class="image"
          [title]="file[0]"
          [src]="getSrc(file[1])"
-         preload="metadata"
-         loop
-         controls></video>
-  } @else {
-  <img class="image"
-       [title]="file[0]"
-       [src]="getSrc(file[1])"
-       (click)="checkExifData($event, file[2])">
-  }
+         (click)="checkExifData($event, file[2])">
+    }
+  </div>
   }
 
 </div>

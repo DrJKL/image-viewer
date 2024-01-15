@@ -8,7 +8,9 @@
 
 .viewer-toolbar {
   ::ng-deep > [role="toolbar"] {
-    min-height: 115px;
+    min-height: 75px;
+    margin: 0;
+    padding-block: 2px;
   }
   p-progressBar,
   .spacer {
@@ -18,6 +20,9 @@
   .count-input,
   .paginator {
     flex: 0 1 fit-content;
+    input {
+      max-width: 5rem;
+    }
   }
 }
 
@@ -32,6 +37,12 @@
   scrollbar-gutter: stable both-edges;
   transition: 300ms;
 
+  .image-cell {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    place-items: center;
+  }
+
   .image {
     transition: 200ms ease-in-out;
     &:hover {
@@ -43,9 +54,19 @@
   img,
   video,
   p-image {
-    height: 100%;
+    outline: 1px solid red;
+
+    height: fit-content;
+    width: fit-content;
+    height: -moz-available;
+    width: -moz-available;
+    height: -webkit-fill-available;
+    width: -webkit-fill-available;
+
+    max-height: 100%;
+    max-width: 100%;
+    min-height: 0;
+    min-width: 0;
     object-fit: contain;
-    object-position: top;
-    width: 100%;
   }
 }
