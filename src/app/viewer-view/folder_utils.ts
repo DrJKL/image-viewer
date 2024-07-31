@@ -8,7 +8,7 @@ import {
   switchMap,
   throttleTime,
 } from 'rxjs/operators';
-import { sortedIndexBy } from 'lodash';
+import { sortedIndexBy } from 'lodash-es';
 
 @Injectable({ providedIn: 'root' })
 export class FolderWatcher {

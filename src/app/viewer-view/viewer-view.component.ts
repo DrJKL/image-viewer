@@ -24,6 +24,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Settings, SettingsService } from '../settings/settings';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
 import { ReplaySubject, firstValueFrom } from 'rxjs';
+import { groupBy } from 'lodash-es';
 
 type ImageData = readonly [string, File, ExifReader.Tags | undefined];
 
@@ -169,6 +170,7 @@ export class ViewerViewComponent {
     _$event: MouseEvent,
     tags: ExifReader.Tags | undefined
   ) {
+    console.log('EXIF tags');
     console.log({ tags });
     if (!tags) {
       return;
@@ -179,6 +181,7 @@ export class ViewerViewComponent {
         const { value } = prompt;
         const cleanValue = `${value}`.replaceAll(/NaN/g, 'null');
         const promptJSON = JSON.parse(cleanValue);
+        console.log('Prompt JSON');
         console.log(promptJSON);
       } catch (error: unknown) {
         console.error('Failed to parse prompt', error);
@@ -186,13 +189,113 @@ export class ViewerViewComponent {
     }
     if (workflow) {
       try {
-        const workflowJSON = JSON.parse(workflow.value);
+        const workflowJSON: Workflow = JSON.parse(workflow.value);
+        console.log('Workflow JSON');
         console.log(workflowJSON);
+
+        const { nodes, groups, links, last_node_id, last_link_id } =
+          workflowJSON;
+
+        const nodeTypes = groupBy(nodes, 'type');
+        // console.table(nodeTypes);
+
+        const titles = nodes
+          .map((node: Node) => node.title + ' ' + node.type)
+          .filter(Boolean)
+          .sort();
+        // console.table(titles);
+
+        const [lastNode] = nodes.filter((node) => node.id === last_node_id);
+        console.log('Last Node?', lastNode);
+
+        /* Last Link Logging?
+        const [lastLink] = links.filter((link) => link[0] === last_link_id);
+        console.log('Last link?', lastLink);
+
+        console.log(
+          'Which is...',
+          nodes.find((node) => node.id === lastLink[1])
+        );
+        console.log(
+          'and',
+          nodes.find((node) => node.id === lastLink[3])
+        );
+        // */
+
+        /* Log Group Contents
+        for (const group of groups) {
+          const { title } = group;
+          const groupNodes = nodes
+            .filter((node) => nodeInGroup(node, group))
+            .map(({ type, title }) => ({ type, title }));
+          console.log(`
+
+${title}
+`);
+          console.table(groupNodes);
+        }
+        // */
       } catch (error) {
         console.error('Failed to parse workflow', error);
       }
     }
   }
+}
+
+// Incomplete
+interface Workflow {
+  groups: Group[];
+  nodes: Node[];
+  last_link_id: number;
+  last_node_id: number;
+  links: Link[];
+  widget_idx_map: unknown[];
+}
+
+type Link = [number, number, number, number, number, string];
+
+interface Node {
+  flags: { collapsed?: boolean; pinned?: boolean };
+  id: number;
+  inputs: unknown[];
+  mode: number;
+  order: number;
+  pos: [number, number];
+  properties: Object;
+  size: { 0: number; 1: number };
+  title?: string;
+  type: string;
+  widgets_values: unknown[];
+  bgcolor?: string;
+  color?: string;
+}
+
+interface Group {
+  bounding: [number, number, number, number];
+  color: string;
+  font_size: number;
+  locked: boolean;
+  title: string;
+}
+
+function nodeInGroup(node: Node, group: Group) {
+  // See overlapBounding in LItegraph
+  const [groupX, groupY, groupW, groupH] = group.bounding;
+  const { 0: nodeX, 1: nodeY } = node.pos;
+  const { 0: nodeW, 1: nodeH } = node.size;
+  const groupX2 = groupX + groupW;
+  const groupY2 = groupY + groupH;
+  const nodeX2 = nodeX + nodeW;
+  const nodeY2 = nodeY + nodeH;
+  if (
+    groupX < nodeX2 &&
+    groupX2 > nodeX &&
+    groupY < nodeY2 &&
+    groupY2 > nodeY
+  ) {
+    return true;
+  }
+  return false;
 }
 
 async function updateSignalWithBuffer<T>(
